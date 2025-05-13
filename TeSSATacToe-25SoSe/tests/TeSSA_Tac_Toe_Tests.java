@@ -18,8 +18,6 @@ public class TeSSA_Tac_Toe_Tests {
     private static final int TIME_OUT = 0;
 
     @BeforeEach
-
-
     public void setUp() throws Exception {
         p1 = new Player("Player 1", Ressources.icon_x);
         p2 = new Player("Player 2", Ressources.icon_o);
@@ -179,16 +177,11 @@ public class TeSSA_Tac_Toe_Tests {
     public void klickeoftnegativ() throws InterruptedException {
         for (int i = 0; i < 20; i++) {
             frame.turn(1, 1);
-            frame.reset();
             Thread.sleep(TIME_OUT);
         }
         String retString = board.getPlayerNameInField(0, 0);
 
         assertEquals("        ", retString);
-
-
-
-
     }
 
     @Test
@@ -421,21 +414,41 @@ public class TeSSA_Tac_Toe_Tests {
         saveButton.doClick();
         assertEquals("TeSSA red", p2.getIconString());
         assertEquals("TeSSA blue", p1.getIconString());
+
+    }
+
+
+    @Test
+    public void testgoinSettings() throws InterruptedException {
+
+        JMenuBar menuBar = (JMenuBar) frame.getContentPane().getComponent(0);
+        JMenu settingsbutton= (JMenu) menuBar.getComponent(0);
+        settingsbutton.doClick();
+        settingsbutton.getItem(0).doClick();
     }
 
     @Test
-    public void test_ActionPerformed() throws InterruptedException {
+    public void testReset() throws InterruptedException {
+
         frame.resetBoard();
         JButton[][] buttons = frame.getButtonArr();
-        JButton testButton = buttons[0][0];
-        testButton.doClick();
+        JButton testbutton=buttons[1][0];
+        testbutton.doClick();
+
     }
 
     @Test
-    public void test_Debug() throws InterruptedException {
+    public void iconTest() throws InterruptedException {
+
         frame.setDebugg(false);
-        frame.turn(2,2);
+        frame.turn(2, 2);
+
+
     }
+
+
+
+
 
 
 }
