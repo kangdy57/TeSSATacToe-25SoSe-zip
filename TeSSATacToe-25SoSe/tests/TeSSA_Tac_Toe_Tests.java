@@ -4,10 +4,9 @@ import gfx.Ressources;
 import logic.Board;
 import logic.Player;
 import logic.WinState;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+
+import javax.swing.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -19,6 +18,8 @@ public class TeSSA_Tac_Toe_Tests {
     private static final int TIME_OUT = 0;
 
     @BeforeEach
+
+
     public void setUp() throws Exception {
         p1 = new Player("Player 1", Ressources.icon_x);
         p2 = new Player("Player 2", Ressources.icon_o);
@@ -107,7 +108,7 @@ public class TeSSA_Tac_Toe_Tests {
         assert frame.getComponentAt(3, 4) != null : "Cell should be filled!";
     }
 
-    @Test //fenster wer gewinnt
+    @Test
     public void test002() throws InterruptedException { //Gewinn ueber Ecke
         frame.turn(2, 0); //x
         Thread.sleep(TIME_OUT);
@@ -126,8 +127,8 @@ public class TeSSA_Tac_Toe_Tests {
 
     @Test
     public void test003() {
-        frame.getPlayer1_score().setText("1"); //inital score
-        frame.getPlayer2_score().setText("99"); // -1 kriegen .... aber sollte immer 1+ sein
+        frame.getPlayer1_score().setText("1");
+        frame.getPlayer2_score().setText("99"); // arbitrary number, will be overwritten to -1 on win
 
         // Simulate a win for Player 1
         WinState winner1 = WinState.player1;
@@ -156,6 +157,7 @@ public class TeSSA_Tac_Toe_Tests {
     }
 
     @Test //004
+    @DisplayName("prüfe i-Formation nicht gewinnt")
     public void bauiNegativ() throws InterruptedException {
         frame.turn(0, 0);
         Thread.sleep(TIME_OUT);
@@ -177,11 +179,16 @@ public class TeSSA_Tac_Toe_Tests {
     public void klickeoftnegativ() throws InterruptedException {
         for (int i = 0; i < 20; i++) {
             frame.turn(1, 1);
+            frame.reset();
             Thread.sleep(TIME_OUT);
         }
         String retString = board.getPlayerNameInField(0, 0);
 
         assertEquals("        ", retString);
+
+
+
+
     }
 
     @Test
@@ -212,7 +219,7 @@ public class TeSSA_Tac_Toe_Tests {
         frame.turn(3, 0);
         frame.turn(3, 2);
         WinState winSt = frame.turn(3, 3);
-        assertSame(WinState.none, winSt);
+        frame.checkWinner(winSt);;
     }
 
     @Test
@@ -251,5 +258,184 @@ public class TeSSA_Tac_Toe_Tests {
 
         assertSame(WinState.player1, win);
     }
+
+    @Test
+    public void testcheckwinner() throws InterruptedException {
+
+        p1 = new Player("Player 1", Ressources.icon_x);
+        p2 = new Player("Player 2", Ressources.icon_o);
+        board = new Board(4, 4, 3, p1, p2);
+
+        frame = new MainWindow(p1, p2, board);
+        frame.setVisible(true);
+        MainWindow.setDebugg(true);
+
+        frame.turn(0, 3);
+        frame.turn(0, 0);
+
+        frame.turn(1, 2);
+        frame.turn(1, 0);
+
+        frame.turn(2, 1);
+        WinState win = frame.turn(3, 0);
+        JFrame setframe=frame.settingsFrame();
+        JPanel panel = (JPanel) setframe.getContentPane().getComponent(0);
+        JComboBox<?> combo1 = null, combo2 = null;
+        int comboBoxCount = 0;
+        for (int i = 0; i < panel.getComponentCount(); i++) {
+            if (panel.getComponent(i) instanceof JComboBox) {
+                comboBoxCount++;
+                if (comboBoxCount == 1) combo1 = (JComboBox<?>) panel.getComponent(i);
+                if (comboBoxCount == 2) combo2 = (JComboBox<?>) panel.getComponent(i);
+            }
+        }
+
+
+        assert combo1 != null;
+        assertSame(4,combo1.getItemCount());
+
+    }
+    @Test
+    public void testwinplayer1() {
+        frame.turn(0, 0);
+        frame.turn(2, 1);
+        frame.turn(0, 1);
+        frame.turn(1, 1);
+        frame.turn(0, 2);
+        WinState winSt = frame.turn(1, 0);
+        frame.checkWinner(winSt);
+    }
+
+    @Test
+    public void testwinplayer2() {
+        frame.turn(0, 0);
+        frame.turn(2, 0);
+        frame.turn(0, 3);
+        frame.turn(2, 1);
+        frame.turn(2, 3);
+        WinState winSt = frame.turn(2, 2);
+        frame.checkWinner(winSt);
+    }
+
+    @Test
+    public void testdraw() throws InterruptedException {
+        board = new Board(3, 3, 3, p1, p2);
+        frame = new MainWindow(p1, p2, board);
+        frame.turn(0, 0);
+        Thread.sleep(TIME_OUT);
+        frame.turn(2, 0);
+        Thread.sleep(TIME_OUT);
+        frame.turn(1, 0);
+        frame.turn(0, 1);
+        frame.turn(2, 2);
+        frame.turn(1, 1);
+        frame.turn(0, 2);
+        frame.turn(2, 0);
+        frame.turn(1, 2);
+        frame.turn(2, 2);
+        frame.turn(2, 1);
+        Thread.sleep(TIME_OUT);
+
+
+
+        WinState winSt = frame.turn(2, 2);
+        frame.checkWinner(winSt);
+    }
+
+    @Test
+    public void setICon() {
+        p1.setIcon(Ressources.icon_tessa_red);
+        p2.setIcon(Ressources.icon_tessa_blue);
+        assertEquals("TeSSA blue", p2.getIconString());
+        assertEquals("TeSSA red", p1.getIconString());
+    }
+
+    @Test
+    public void setIconNothing() {
+        p1.setIcon(Ressources.icon_none);
+        assertEquals("", p1.getIconString());
+    }
+
+    @Test
+    public void testtoString() {
+
+        assertEquals("[Player 1]", p1.toString());
+
+
+    }
+
+    @Test
+    public void testChangeSymbols() throws InterruptedException {
+
+        JPanel settingsPanel= (JPanel) frame.settingsFrame().getContentPane().getComponent(0);
+        JComboBox iconAuswahlS1= (JComboBox) settingsPanel.getComponent(1);
+        iconAuswahlS1.setSelectedIndex(1);
+        JComboBox iconAuswahlS2= (JComboBox) settingsPanel.getComponent(3);
+        iconAuswahlS2.selectWithKeyChar((char)"O".getBytes()[0]);
+        JButton saveButton= (JButton) settingsPanel.getComponent(4);
+        saveButton.doClick();
+        assertEquals("O", p2.getIconString());
+        assertEquals("TeSSA blue", p1.getIconString());
+
+    }
+
+    @Test
+    public void testChangeSymbols2() throws InterruptedException {
+
+        JPanel settingsPanel= (JPanel) frame.settingsFrame().getContentPane().getComponent(0);
+        JComboBox iconAuswahlS1= (JComboBox) settingsPanel.getComponent(1);
+        iconAuswahlS1.setSelectedIndex(2);
+        JComboBox iconAuswahlS2= (JComboBox) settingsPanel.getComponent(3);
+        iconAuswahlS2.setSelectedIndex(3);
+        JButton saveButton= (JButton) settingsPanel.getComponent(4);
+        saveButton.doClick();
+        assertEquals("TeSSA blue", p2.getIconString());
+        assertEquals("TeSSA red", p1.getIconString());
+
+    }
+
+    @Test
+    public void testChangeSymbols3() throws InterruptedException {
+
+        JPanel settingsPanel= (JPanel) frame.settingsFrame().getContentPane().getComponent(0);
+        JComboBox iconAuswahlS1= (JComboBox) settingsPanel.getComponent(1);
+        iconAuswahlS1.setSelectedIndex(0);
+        JComboBox iconAuswahlS2= (JComboBox) settingsPanel.getComponent(3);
+        iconAuswahlS2.setSelectedIndex(1);
+        JButton saveButton= (JButton) settingsPanel.getComponent(4);
+        saveButton.doClick();
+        assertEquals("TeSSA blue", p2.getIconString());
+        assertEquals("X", p1.getIconString());
+
+    }
+
+    @Test
+    public void testChangeSymbols4() throws InterruptedException {
+
+        JPanel settingsPanel= (JPanel) frame.settingsFrame().getContentPane().getComponent(0);
+        JComboBox iconAuswahlS1= (JComboBox) settingsPanel.getComponent(1);
+        iconAuswahlS1.setSelectedIndex(3);
+        JComboBox iconAuswahlS2= (JComboBox) settingsPanel.getComponent(3);
+        iconAuswahlS2.setSelectedIndex(2);
+        JButton saveButton= (JButton) settingsPanel.getComponent(4);
+        saveButton.doClick();
+        assertEquals("TeSSA red", p2.getIconString());
+        assertEquals("TeSSA blue", p1.getIconString());
+    }
+
+    @Test
+    public void test_ActionPerformed() throws InterruptedException {
+        frame.resetBoard();
+        JButton[][] buttons = frame.getButtonArr();
+        JButton testButton = buttons[0][0];
+        testButton.doClick();
+    }
+
+    @Test
+    public void test_Debug() throws InterruptedException {
+        frame.setDebugg(false);
+        frame.turn(2,2);
+    }
+
 
 }

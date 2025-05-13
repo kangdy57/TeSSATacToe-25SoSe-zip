@@ -90,103 +90,76 @@ public class Board {
         board = new int[m][n];
     }
 
+
+
     public void setToken2d(int m, int n, Player p) {
-        board[m][n] = (player1 == p) ? 1 : 2;
+            board[m][n] = (player1 == p) ? 1 : 2;
     }
+
 
     public WinState checkWin() {
         int tilesLeft = 0;
+
         for (int m = 0; m < getM(); m++) {
-            for (int n = 0; n <= getN() - 2; n++) {
+            for (int n = 0; n < getN(); n++) {
                 int checkPlayer = board[m][n];
-                if (checkPlayer != 0) {
-                    boolean win = false;
-                    // rows
-                    if ((n + k <= getN())) {
-                        win = true;
-                        for (int i = 0; i < getK(); i++) {
-                            if (checkPlayer != board[m][n + i]) {
-                                win = false;
-                                break;
-                            }
-                        }
-                    }
-                    if (!win && m + k <= getM()) {
-                        win = true;
-                        for (int i = 0; i < getK(); i++) {
-                            if (checkPlayer != board[m + i][n]) {
-                                win = false;
-                                break;
-                            }
-                        }
-                    }
-                    if (!win) {
-                        win = true;
-                        for (int i = 0; i < getK(); i++) {
-                            if (checkPlayer != board[(m + i) % getM()][n]) {
-                                win = false;
-                                break;
-                            }
-                        }
-                    }
-                    if (!win && (m + k <= getM()) && (n + k <= getN())) {
-                        win = true;
-                        for (int i = 0; i < getK(); i++) {
-                            if (checkPlayer != board[m + i][n + i]) {
-                                win = false;
-                            }
-                            if (getM() < 3 && getN() < 3) {
-                                win = true;
-                            }
-                        }
-                    }
-                    if (!win && (m + k <= getM()) && (n - (k - 1) >= 0)) {
-                        win = true;
-                        for (int i = 0; i < getK(); i++) {
-                            if (checkPlayer != board[m + i][n - i]) {
-                                win = false;
-                                break;
-                            }
-                        }
-                    }
-                    if (!win && (m + 1 < getM()) && (n + 1 < getN())) {
-                        win = true;
-                        if (checkPlayer != board[m][n]) {
-                            win = false;
-                        }
-                        if (checkPlayer != board[m + 1][n]) {
-                            win = false;
-                        }
-                        if (checkPlayer != board[m + 1][n + 1]) {
-                            win = false;
-                        }
-                    }
-                    if (!win && (m + 1 < getM()) && (n + 2 < getN())) {
-                        win = true;
-                        if (checkPlayer != board[m][n]) {
-                            win = false;
-                        }
-                        if (checkPlayer != board[m][n + 2]) {
-                            win = false;
-                        }
-                        if (checkPlayer != board[m + 1][n + 1]) {
-                            win = false;
-                        }
-                    }
-                    if (win) {
-                        return WinState.values()[checkPlayer];
-                    }
-                } else {
+
+                if (checkPlayer == 0) {
                     tilesLeft++;
+                    continue;
+                }
+
+                // Horizontal →
+                if (n + k <= getN()) {
+                    boolean win = true;
+                    for (int i = 0; i < k; i++) {
+                        if (board[m][n + i] != checkPlayer) {
+                            win = false;
+                            break;
+                        }
+                    }
+                    if (win) return WinState.values()[checkPlayer];
+                }
+
+                // Vertical ↓
+                if (m + k <= getM()) {
+                    boolean win = true;
+                    for (int i = 0; i < k; i++) {
+                        if (board[m + i][n] != checkPlayer) {
+                            win = false;
+                            break;
+                        }
+                    }
+                    if (win) return WinState.values()[checkPlayer];
+                }
+
+                // Diagonal ↘
+                if (m + k <= getM() && n + k <= getN()) {
+                    boolean win = true;
+                    for (int i = 0; i < k; i++) {
+                        if (board[m + i][n + i] != checkPlayer) {
+                            win = false;
+                            break;
+                        }
+                    }
+                    if (win) return WinState.values()[checkPlayer];
+                }
+
+                // Anti-diagonal ↙
+                if (m + k <= getM() && n - k + 1 >= 0) {
+                    boolean win = true;
+                    for (int i = 0; i < k; i++) {
+                        if (board[m + i][n - i] != checkPlayer) {
+                            win = false;
+                            break;
+                        }
+                    }
+                    if (win) return WinState.values()[checkPlayer];
                 }
             }
         }
-        if (tilesLeft == 0)
 
-        {
-            return WinState.tie;
-        }
-
-        return WinState.none;
+        return (tilesLeft == 0) ? WinState.tie : WinState.none;
     }
+
 }
