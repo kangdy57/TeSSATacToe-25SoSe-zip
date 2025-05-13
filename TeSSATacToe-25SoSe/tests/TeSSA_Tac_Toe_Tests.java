@@ -175,9 +175,15 @@ public class TeSSA_Tac_Toe_Tests {
 
     @Test //006
     public void klickeoftnegativ() throws InterruptedException {
-        for (int i = 0; i < 20; i++) {
-            frame.turn(1, 1);
-            Thread.sleep(TIME_OUT);
+        int clicks = 0;
+        outer:
+        for (int m = 0; m < board.getM(); m++) {
+            for (int n = 0; n < board.getN(); n++) {
+                frame.turn(m, n);
+                Thread.sleep(TIME_OUT);
+                clicks++;
+                if (clicks >= 20) break outer;
+            }
         }
         String retString = board.getPlayerNameInField(0, 0);
 
@@ -446,9 +452,40 @@ public class TeSSA_Tac_Toe_Tests {
 
     }
 
+    @Test
+    public void test_getSizeAndK() throws InterruptedException {
+        Board board = new Board(5,5,3,p1,p2);
+        board.getM();
+        board.getN();
+        board.getK();
+    }
 
+    @Test
+    public void test_tied() throws InterruptedException {
 
+        frame.turn(0,0);
+        frame.turn(0,1);
+        frame.turn(0,2);
+        frame.turn(0,3);
+        frame.turn(0,4);
+        frame.turn(1,0);
+        frame.turn(1,1);
+        frame.turn(1,2);
+        frame.turn(1,3);
+        frame.turn(1,4);
+        frame.turn(3,0);
+        frame.turn(3,1);
+        frame.turn(3,2);
+        frame.turn(3,3);
+        frame.turn(3,4);
+        frame.turn(2,0);
+        frame.turn(2,1);
+        frame.turn(2,2);
+        frame.turn(2,3);
+        WinState win = frame.turn(2,4);
+        frame.checkWinner(win);
 
-
+        assertEquals(WinState.tie, win);
+    }
 
 }

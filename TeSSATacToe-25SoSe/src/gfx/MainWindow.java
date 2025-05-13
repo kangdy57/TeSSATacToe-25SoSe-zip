@@ -11,6 +11,7 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
+import javax.annotation.processing.Generated;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -39,6 +40,7 @@ public class MainWindow extends JFrame {
     private static boolean DEBUG = false;
 
     private JButton buttonArr[][];
+
 
     private JLabel player1_score, player2_score;
     private JLabel player1_label, player2_label;
@@ -163,6 +165,7 @@ public class MainWindow extends JFrame {
                             + "</body></html>");
                     ep.addHyperlinkListener(new HyperlinkListener() {
                         @Override
+                        @Generated("ignore")
                         public void hyperlinkUpdate(HyperlinkEvent e) {
                             Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
                             if (e.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED)) {
