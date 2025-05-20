@@ -296,7 +296,7 @@ public class MainWindow extends JFrame {
         return winner;
     }
 
-    public void checkWinner(WinState winner) {
+    public void checkWinner(WinState winner) throws NullPointerException{
         if (WinState.none != winner) {
             String title = "";
             String msg = "";
