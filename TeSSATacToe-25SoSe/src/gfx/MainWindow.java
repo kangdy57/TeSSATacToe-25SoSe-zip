@@ -163,20 +163,19 @@ public class MainWindow extends JFrame {
                     JEditorPane ep = new JEditorPane("text/html", "<html><body style=\"" + style + "\">" //
                             + "Well Done! You start thinking like a real tester!<br>Join us on: <a href=\"http://tessa.haw-hamburg.de/\">tessa.haw-hamburg.de</a>" //
                             + "</body></html>");
-                    ep.addHyperlinkListener(new HyperlinkListener() {
-                        @Override
-                        @Generated("ignore")
-                        public void hyperlinkUpdate(HyperlinkEvent e) {
-                            Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
-                            if (e.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED)) {
-                                try {
-                                    desktop.browse(e.getURL().toURI());
-                                } catch (IOException | URISyntaxException e1) {
-                                    System.out.println("Link broke! this should never happen...");
-                                }
-                            }
-                        }
-                    });
+//                    ep.addHyperlinkListener(new HyperlinkListener() {
+//                        @Override
+//                        public void hyperlinkUpdate(HyperlinkEvent e) {
+//                            Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+//                            if (e.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED)) {
+//                                try {
+//                                    desktop.browse(e.getURL().toURI());
+//                                } catch (IOException | URISyntaxException e1) {
+//                                    System.out.println("Link broke! this should never happen...");
+//                                }
+//                            }
+//                        }
+//                    });
                     ep.setEditable(false);
                     ep.setBackground(label.getBackground());
                     JOptionPane.showMessageDialog(settingsFrame, ep);

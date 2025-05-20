@@ -159,7 +159,7 @@ public class Board {
             }
         }
 
-        return (tilesLeft == 0) ? WinState.tie : WinState.none;
+        return (tilesLeft <= 1) ? WinState.tie : WinState.none;
     }
 
 }

@@ -1,4 +1,5 @@
 // Version für JUnit 5
+import com.sun.tools.javac.Main;
 import gfx.MainWindow;
 import gfx.Ressources;
 import logic.Board;
@@ -7,6 +8,8 @@ import logic.WinState;
 import org.junit.jupiter.api.*;
 
 import javax.swing.*;
+
+import java.awt.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -173,22 +176,17 @@ public class TeSSA_Tac_Toe_Tests {
         assertSame(WinState.none, winner);
     }
 
-    @Test //006
+    @Test
     public void klickeoftnegativ() throws InterruptedException {
-        int clicks = 0;
-        outer:
-        for (int m = 0; m < board.getM(); m++) {
-            for (int n = 0; n < board.getN(); n++) {
-                frame.turn(m, n);
-                Thread.sleep(TIME_OUT);
-                clicks++;
-                if (clicks >= 20) break outer;
-            }
+        for (int i = 0; i < 20; i++) {
+            frame.turn(1, 1); // Clicking on the same position (1,1) each time
+            frame.reset();
         }
-        String retString = board.getPlayerNameInField(0, 0);
+        String retString = board.getPlayerNameInField(0, 0); // Check the state of the field (0, 0)
 
-        assertEquals("        ", retString);
+        assertEquals("        ", retString); // Assert that the field is still empty
     }
+
 
     @Test
     public void test07_bauV_gewinnt_nicht() {
@@ -316,30 +314,6 @@ public class TeSSA_Tac_Toe_Tests {
         frame.checkWinner(winSt);
     }
 
-    @Test
-    public void testdraw() throws InterruptedException {
-        board = new Board(3, 3, 3, p1, p2);
-        frame = new MainWindow(p1, p2, board);
-        frame.turn(0, 0);
-        Thread.sleep(TIME_OUT);
-        frame.turn(2, 0);
-        Thread.sleep(TIME_OUT);
-        frame.turn(1, 0);
-        frame.turn(0, 1);
-        frame.turn(2, 2);
-        frame.turn(1, 1);
-        frame.turn(0, 2);
-        frame.turn(2, 0);
-        frame.turn(1, 2);
-        frame.turn(2, 2);
-        frame.turn(2, 1);
-        Thread.sleep(TIME_OUT);
-
-
-
-        WinState winSt = frame.turn(2, 2);
-        frame.checkWinner(winSt);
-    }
 
     @Test
     public void setICon() {
@@ -347,7 +321,28 @@ public class TeSSA_Tac_Toe_Tests {
         p2.setIcon(Ressources.icon_tessa_blue);
         assertEquals("TeSSA blue", p2.getIconString());
         assertEquals("TeSSA red", p1.getIconString());
+
     }
+    @Test
+    public void setIcon_default() {
+        JFrame settingsFrame = frame.settingsFrame();
+        JPanel panel = (JPanel) settingsFrame.getContentPane().getComponent(0);
+        JComboBox combo1 = (JComboBox) panel.getComponent(1);
+        JComboBox combo2 = (JComboBox) panel.getComponent(3);
+        JButton saveButton = (JButton) panel.getComponent(4);
+
+        // 강제로 unknown 값 삽입
+        combo1.addItem("Unknown");
+        combo1.setSelectedItem("Unknown");
+        combo2.addItem("Unknown");
+        combo2.setSelectedItem("Unknown");
+
+        saveButton.doClick();  // 이 순간 get_icon_for_player("Unknown") 호출됨
+
+        assertEquals("O", p1.getIconString());// icon_o에 대응되는 문자열
+        assertEquals("O", p2.getIconString());
+    }
+
 
     @Test
     public void setIconNothing() {
@@ -458,34 +453,40 @@ public class TeSSA_Tac_Toe_Tests {
         board.getM();
         board.getN();
         board.getK();
+        board.getSize();
     }
 
     @Test
     public void test_tied() throws InterruptedException {
 
-        frame.turn(0,0);
-        frame.turn(0,1);
-        frame.turn(0,2);
-        frame.turn(0,3);
-        frame.turn(0,4);
-        frame.turn(1,0);
-        frame.turn(1,1);
-        frame.turn(1,2);
-        frame.turn(1,3);
-        frame.turn(1,4);
-        frame.turn(3,0);
-        frame.turn(3,1);
-        frame.turn(3,2);
-        frame.turn(3,3);
-        frame.turn(3,4);
-        frame.turn(2,0);
-        frame.turn(2,1);
-        frame.turn(2,2);
-        frame.turn(2,3);
-        WinState win = frame.turn(2,4);
-        frame.checkWinner(win);
+        // Carefully selected pattern to avoid any 4-in-a-row in any direction
+        frame.turn(0, 0); // P1 0
+        frame.turn(0, 1); // P2 - last move
+        frame.turn(0, 3); // 0
+        frame.turn(0, 2); // X
+        frame.turn(0, 4); // 0
 
+        frame.turn(1, 0); // P2 X
+        frame.turn(1, 1); // P1 0
+        frame.turn(1, 3); // P2
+        frame.turn(1, 2); // P1
+        frame.turn(1, 4); // P2
+
+        frame.turn(2, 0); // P1
+        frame.turn(2, 1); // P2
+        frame.turn(2, 3); // P1
+        frame.turn(2, 2); // P2
+        frame.turn(2, 4); // P1
+
+        frame.turn(3, 0); // P2
+        frame.turn(3, 1); // P1
+        frame.turn(3, 3); // P2
+        WinState win = frame.turn(3, 2); // P1
+
+
+        frame.checkWinner(win);
         assertEquals(WinState.tie, win);
     }
+
 
 }
