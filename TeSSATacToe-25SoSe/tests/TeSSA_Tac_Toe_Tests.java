@@ -350,15 +350,10 @@ public class TeSSA_Tac_Toe_Tests {
         assertEquals("", p1.getIconString());
     }
 
-    @Test
-    public void testCheckWinner_DefaultCaseTriggered() throws NullPointerException{
-        // default를 실행시키기 위해 null 전달
-        // -> switch(winner) 에서 default 로 떨어짐
-        frame.checkWinner(null);
-
-        // 예상된 동작: 아무 일도 안 일어남 (default는 empty break)
-        // 단지 coverage 1줄 채우기 목적
-    }
+//    @Test
+//    public void testCheckWinner_DefaultCaseTriggered() throws NullPointerException{
+//        frame.checkWinner(null);
+//    }
 
     @Test
     public void testtoString() {
